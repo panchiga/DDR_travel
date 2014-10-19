@@ -21,39 +21,70 @@ $info = Array.new()
 18 #STOPS:256.000=0.167
 ;
 19 #BGCHANGES:;
+20-29 #NOTES:;
 =end
-
-
 def show_info (file)
-	#puts string + ":" + file.grep(/#/).to_s.split(":")[1].split(";")[0]
-	$info = file.grep(/#/)
+	
+	#full #TITLE is 
+	#["#TITLE:smooooch・∀・;\r\n"]
+	$info = file.grep(/#.*;/m)
 	puts $info[0]
 	puts $info[2]
 	puts $info[16]
+	puts $info.size
+
+	#show level
+	#sample
+	#Begginer:    2:
+	require "open3"
+	out = Array.new()
+
+	level = ["Beginner","Easy","Medium","Hard","Challenge"]
+	level.size.times do |tmp|
+		out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} sm")
+		out_arr = out.split("\r\n")
+		
+		out_arr.size.times do |i|
+			out_arr[i].strip!
+			print sprintf("%10s", out_arr[i]);
+		end	
+		puts
+		#puts sprintf("%10s %5s",out_arr[0], out_arr[1])
+	end
+
+
+end
+
+#object name is basic,difficult,hard...
+class Song
+	def initialise(difficult,start_line,end_line)
+		
+	end
+
+	def calc_damage 
+		
+	end
 end
 
 
-
-#-------------main----------------------------
+#-----------------------main----------------------------
 
 print "input file name:"
 #while(filename = gets.chop) do
 filename = gets.chop
-	if File.exist?(filename) == false
-		print filename + " is not found.\n "
-	#	next
-	end
-	file = open(filename,"r")
+if File.exist?(filename) == false
+	print filename + " is not found.\n "
+	#next
+end
+	
+file = open(filename,"r")
+show_info(file)
 
-	#full #TITLE is 
-	#["#TITLE:smooooch・∀・;\r\n"]
-
-	show_info(file)
-
-	file.each do |line|
-	end
+file.each do |line|
+	puts line
+end
 
 
-	file.close
+file.close
 #end #while
 

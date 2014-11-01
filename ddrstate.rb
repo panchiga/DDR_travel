@@ -35,11 +35,13 @@ class Mscore
 	attr_accessor :lines 
 	attr_accessor :box
 	attr_accessor :filename	
+	attr_accessor :file
 
 	def initialize 
 		@lines = Array.new()
 		@box = Array.new()
 		@filename = ""
+		@file = ""
 	end
 
 	def setlines(l1,l2,l3,l4)
@@ -53,11 +55,11 @@ class Mscore
 		
 	end
 
-	def show_info (file)
+	def show_info ()
 
 		#full #TITLE is 
 		#["#TITLE:smooooch・∀・;\r\n"]
-		$info = file.grep(/#.*;/m)
+		$info = @file.grep(/#.*;/m)
 		puts $info[0]
 		puts $info[2]
 		puts $info[16]
@@ -84,28 +86,38 @@ class Mscore
 		end
 
 	end
+
+	def set_file()
+
+		print "input file name:"
+		#while(filename = gets.chop) do
+		@filename = gets.chop
+		if File.exist?(@filename) == false
+			print @filename + " is not found.\n "
+			#next
+		else
+
+			@file = open(@filename,"r")
+			
+			#てすとかな
+			#@file.each do |line|
+			#	puts line
+			#end
+		end
+	end
+
+	def closefile()
+		@file.close
+	end
+
 end
 
 
 #-----------------------main----------------------------
+song = Mscore.new()
+song.set_file()
+song.show_info()
 
-print "input file name:"
-#while(filename = gets.chop) do
-filename = gets.chop
-if File.exist?(filename) == false
-	print filename + " is not found.\n "
-	#next
-end
-test = Mscore.new()
-
-file = open(filename,"r")
-test.show_info(file)
-
-file.each do |line|
-	puts line
-end
-
-
-file.close
+song.closefile()
 #end #while
 

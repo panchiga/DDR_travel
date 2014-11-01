@@ -23,46 +23,66 @@ $info = Array.new()
 19 #BGCHANGES:;
 20-29 #NOTES:;
 =end
-def show_info (file)
-	
-	#full #TITLE is 
-	#["#TITLE:smooooch・∀・;\r\n"]
-	$info = file.grep(/#.*;/m)
-	puts $info[0]
-	puts $info[2]
-	puts $info[16]
-	puts $info.size
 
-	#show level
-	#sample
-	#Begginer:    2:
-	require "open3"
-	out = Array.new()
 
-	level = ["Beginner","Easy","Medium","Hard","Challenge"]
-	level.size.times do |tmp|
-		out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} sm")
-		out_arr = out.split("\r\n")
-		
-		out_arr.size.times do |i|
-			out_arr[i].strip!
-			print sprintf("%10s", out_arr[i]);
-		end	
-		puts
-		#puts sprintf("%10s %5s",out_arr[0], out_arr[1])
+#流れとして
+#fileを読み込んでsetlineを読んでlinesに格納していく
+#,を基準にboxとして扱い、linesを格納していく
+#最期まで入れていく
+#
+class Mscore
+	#これをすることでこの名前の要素にアクセス出来る
+	attr_accessor :lines 
+	attr_accessor :box
+	attr_accessor :filename	
+
+	def initialize 
+		@lines = Array.new()
+		@box = Array.new()
+		@filename = ""
 	end
 
+	def setlines(l1,l2,l3,l4)
+		line = [l1,l2,l3,l4]
+		@lines.push(line)
+	end
 
-end
-
-#object name is basic,difficult,hard...
-class Song
-	def initialise(difficult,start_line,end_line)
+	def setbox()
+		@box.push(@lines)
+		@box.push(@lines)
 		
 	end
 
-	def calc_damage 
-		
+	def show_info (file)
+
+		#full #TITLE is 
+		#["#TITLE:smooooch・∀・;\r\n"]
+		$info = file.grep(/#.*;/m)
+		puts $info[0]
+		puts $info[2]
+		puts $info[16]
+		puts $info.size
+
+		#show level
+		#sample
+		#Begginer:    2:
+		require "open3"
+		out = Array.new()
+
+		level = ["Beginner","Easy","Medium","Hard","Challenge"]
+		level.size.times do |tmp|
+			out, err, stat = Open3.capture3("grep -A 1 -n #{level[tmp]} sm")
+			out_arr = out.split("\r\n")
+			print tmp
+
+			out_arr.size.times do |i|
+				out_arr[i].strip!
+				#	print sprintf("%10s", out_arr[i]);
+			end	
+			#puts
+			puts sprintf("%10s %5s",out_arr[0], out_arr[1])
+		end
+
 	end
 end
 
@@ -76,9 +96,10 @@ if File.exist?(filename) == false
 	print filename + " is not found.\n "
 	#next
 end
-	
+test = Mscore.new()
+
 file = open(filename,"r")
-show_info(file)
+test.show_info(file)
 
 file.each do |line|
 	puts line

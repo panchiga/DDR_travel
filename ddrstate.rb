@@ -84,7 +84,7 @@ class Mscore
 					#p @boxes
 				end
 				if line[1] ==";"
-					p @boxes
+					#p @boxes
 
 					setlevel()
 				end	

@@ -28,35 +28,92 @@ $info = Array.new()
 #流れとして
 #fileを読み込んでsetlineを読んでlinesに格納していく
 #,を基準にboxとして扱い、linesを格納していく
-#最期まで入れていく
+#最期まで入れていき、levelsに格納して全難易度の入った箱を作る
 #
+#lines == box
+#boxes == level
+#levels == all levels 
 class Mscore
 	#これをすることでこの名前の要素にアクセス出来る
 	attr_accessor :lines 
-	attr_accessor :box
+	attr_accessor :boxes
+	attr_accessor :levels
 	attr_accessor :filename	
 	attr_accessor :file
 
 	def initialize 
-		@lines = Array.new()
-		@box = Array.new()
+		@lines = Array.new
+		@boxes = Array.new
+		@levels = Array.new
 		@filename = ""
 		@file = ""
 	end
-
-	def setlines(l1,l2,l3,l4)
+	################MUSIC SCORE#################
+	#first, dance score in file to arrays
+	def setline(l1,l2,l3,l4)
 		line = [l1,l2,l3,l4]
 		@lines.push(line)
 	end
 
 	def setbox()
-		@box.push(@lines)
-		@box.push(@lines)
+		#p @lines
+		@boxes.push(@lines.dup)
 		
+		@lines.clear()
 	end
 
-	def show_info ()
+	def setlevel()
+		@levels.push(@boxes.dup)
+		@boxes.clear()
+	end
 
+	################READ FILE###################
+	def readfile()
+		mainflag = false
+		@file.each do |line|
+			if (mainflag == false) and (line[0] == "/") 
+				mainflag = true
+			else
+				if line.chop!.size == 4
+					setline(line[0],line[1],line[2],line[3])
+					#puts line
+				end
+				if line[0]==","
+					#p @lines
+					setbox()
+					#p @boxes
+				end
+				if line[1] ==";"
+					p @boxes
+
+					setlevel()
+				end	
+			end
+		end
+	end
+	
+	################file########################
+	def set_file()
+		print "input file name:"
+		#while(filename = gets.chop) do
+		@filename = gets.chop
+		if File.exist?(@filename) == false
+			print @filename + " is not found.\n "
+			#next
+		else
+			@file = open(@filename,"r")
+			#てすとかな
+			#@file.each do |line|
+			#	puts line
+			#end
+		end
+	end
+
+	def closefile()
+		@file.close
+	end	
+	################INFORMATION#################
+	def show_info ()
 		#full #TITLE is 
 		#["#TITLE:smooooch・∀・;\r\n"]
 		$info = @file.grep(/#.*;/m)
@@ -73,7 +130,7 @@ class Mscore
 
 		level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level.size.times do |tmp|
-			out, err, stat = Open3.capture3("grep -A 1 -n #{level[tmp]} sm")
+			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} sm")
 			out_arr = out.split("\r\n")
 			print tmp
 
@@ -84,30 +141,26 @@ class Mscore
 			#puts
 			puts sprintf("%10s %5s",out_arr[0], out_arr[1])
 		end
-
 	end
+	
 
-	def set_file()
+end
 
-		print "input file name:"
-		#while(filename = gets.chop) do
-		@filename = gets.chop
-		if File.exist?(@filename) == false
-			print @filename + " is not found.\n "
-			#next
-		else
+class Human
+	attr_accessor :l_leg
+	attr_accessor :r_leg
 
-			@file = open(@filename,"r")
-			
-			#てすとかな
-			#@file.each do |line|
-			#	puts line
-			#end
-		end
+	def initialize()
+		#left foot, right foot
+		#[0,1,2,3] 
+		#use queue
+		#example, right->left
+		#then, left->right 
+		@l_leg = 0
+		@r_leg = 3
 	end
-
-	def closefile()
-		@file.close
+ 
+	def dancing()
 	end
 
 end
@@ -115,8 +168,11 @@ end
 
 #-----------------------main----------------------------
 song = Mscore.new()
+human = Human.new()
 song.set_file()
-song.show_info()
+
+#song.show_info()
+song.readfile()
 
 song.closefile()
 #end #while

@@ -13,8 +13,9 @@ file.each do |line|
 
 end
 =end
-
+=begin
 class Mscore
+	#これをすることでこの名前の要素にアクセス出来る
 	attr_accessor :lines 
 	attr_accessor :box
 
@@ -58,7 +59,7 @@ arr.each do |i|
 end
 test.setbox()
 test.print()
-
+=end
 =begin
 #file search, return counts in string
 hage.index
@@ -109,4 +110,17 @@ grepしてなんいどとってくるやつ
 	end
 
 
+=end
+=begin
+#[[0,0,0,0],[0,1,2,1],[0,1,0,0]]みたいなのを作りたい話
+#arr1 = [[0,0,0,0],[0,1,2,1]]
+#arr2 = [0,1,0,0]
+#ここでarr1.push(arr2)ってやって、arr2.clear()すると
+#arr2を追加した部分も消えちゃうのを回避するためのやつ
+huge = Array.new(4,0)
+moi = Array.new.map{Array.new}
+moi.push(huge.dup)
+p moi
+huge.clear()
+p moi
 =end

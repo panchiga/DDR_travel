@@ -73,13 +73,15 @@ class Mscore
 
 	################READ FILE###################
 	def readfile()
+		info_i = 0
 		mainflag = false
 		print @file.find {|line| /TITLE/ =~ line}
 		@file.each do |line|
-			if line.index("#") != nil
+			if line.index("#") == nil
 
 				if (mainflag == false) and (line[0] == "/") 
-					mainflag = true else
+					mainflag = true 
+				else
 					if line.chop!.size == 4
 						setline(line[0],line[1],line[2],line[3])
 						#puts line
@@ -94,6 +96,10 @@ class Mscore
 						setlevel()
 					end	
 				end
+			else
+				#p line
+				$info[info_i] = line.to_s.chop
+				info_i += 1
 			end
 		end
 	end
@@ -123,15 +129,19 @@ class Mscore
 	def show_info ()
 		#full #TITLE is 
 		#["#TITLE:smooooch・∀・;\r\n"]
-		$info = @file.grep(/#.*;/m)
-		puts $info[0]
-		puts $info[2]
-		puts $info[16]
-		puts $info.size
+		#$info = @file.grep(/#.*;/m)
+		
+		
+		#$info = 
+		#puts $info[0]
+		#puts $info[2]
+		#puts $info[16]
+		#puts $info.size
 
 		#show level
 		#sample
 		#Begginer:    2:
+		#
 		require "open3"
 		out = Array.new()
 		
@@ -140,7 +150,6 @@ class Mscore
 		level.size.times do |tmp|
 			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} #{ARGV[0]}")
 			out_arr = out.split("\r\n")
-			print tmp
 			
 			#puts $info[0]
 
@@ -154,7 +163,7 @@ class Mscore
 	end
 
 	def test_show()
-		print "#{@levels[1]}/n"
+		p "#{@levels[1]}"
 	end
 
 	#同時が考慮されてない
@@ -166,7 +175,7 @@ class Mscore
 					if(lin[i].to_i != 0 && lin[i].kind_of?(String) )
 						tmp = tmp*4 + i.to_i
 						@cont[tmp] += 1
-						puts tmp
+						#puts tmp
 						tmp = i
 					end
 				end
@@ -182,7 +191,7 @@ class Mscore
 		@counter.puts
 		@counter.close
 		
-		puts cont[0]
+		#puts @cont[0]
 		
 		puts "|      | ->l | ->d | ->u | ->r |"		
 		puts "| LEFT |  #{@cont[0]}  |  #{@cont[1]}  |  #{@cont[2]}  |  #{@cont[3]} | "

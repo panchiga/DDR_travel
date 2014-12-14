@@ -43,6 +43,7 @@ class Mscore
 	attr_accessor :file
 
 	attr_accessor :cont #l->l, l->d, l->u, l-> r,... 16 pattern
+	attr_accessor :foot_levels# 足12とか
 
 	def initialize 
 		@lines = Array.new
@@ -52,6 +53,7 @@ class Mscore
 		@file = ""
 
 		@cont = Array.new(16, 0)
+		@foot_levels = Array.new(5,0)
 	end
 	################MUSIC SCORE#################
 	#first, dance score in file to arrays
@@ -109,21 +111,16 @@ class Mscore
 
 	################file########################
 	def set_file()
-		print "input file name:"
 		#while(filename = gets.chop) do
 		#@filename = gets.chop
 		@filename = ARGV[0]
-		#名前に空白があった時の対処
-		if @filename.index(" ") != nil
-			@filename.gsub(" ",'\ ')
-		end
 			
 		if File.exist?(@filename) == false
 			print @filename + " is not found.\n "
 			#next
 		else
 			@file = open(@filename,"r")
-			p "filename: #{@filename}"
+			p "filename: #{Regexp.escape(@filename)}"
 			#てすとかな
 			#@file.each do |line|
 			#	puts line
@@ -145,7 +142,7 @@ class Mscore
 		level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level.size.times do |tmp|
 
-			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} #{@filename.gsub(" ",'\ ')}")
+			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} #{Regexp.escape(@filename)}")
 			#out, err, stat = Open3.capture3("cat #{@filename.gsub(" ",'\ ' )}")
 			out_arr = out.split("\r\n")
 
@@ -159,6 +156,7 @@ class Mscore
 			end	
 			#puts
 			puts sprintf("%10s %5s",out_arr[0], out_arr[1])
+			@foot_levels[tmp] = out_arr[1]
 		end
 	end
 
@@ -208,6 +206,14 @@ class Mscore
 				end
 			end
 		end
+		travel_file = open("travel","a")
+
+		travel_file.print "#{@foot_levels[lev]},"
+		travel_file.print "#{@filename.split("/").pop},"
+		travel_file.print "#{travel}"
+		travel_file.puts
+		travel_file.close
+
 		puts "travel: #{travel}"
 	end
 
@@ -244,9 +250,6 @@ class Human
 		#then, left->right 
 		@l_leg = 0
 		@r_leg = 3
-	end
-
-	def dancing()
 	end
 
 

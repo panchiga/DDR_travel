@@ -39,7 +39,7 @@ def output_csv ()
 	#	csv_file.print str1
 	#	csv_file.print str2
 	#	csv_file.puts
-		csv_file.sprintf "#{arr[0]},#{arr[1]},#{calclate_std(i)}\n"
+		csv_file.print "#{arr[0]},#{arr[1]},#{calclate_std(i)}\n"
 
 		i += 1
 	end

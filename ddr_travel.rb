@@ -113,11 +113,17 @@ class Mscore
 		#while(filename = gets.chop) do
 		#@filename = gets.chop
 		@filename = ARGV[0]
+		#名前に空白があった時の対処
+		if @filename.index(" ") != nil
+			@filename.gsub(" ",'\ ')
+		end
+			
 		if File.exist?(@filename) == false
 			print @filename + " is not found.\n "
 			#next
 		else
 			@file = open(@filename,"r")
+			p "filename: #{@filename}"
 			#てすとかな
 			#@file.each do |line|
 			#	puts line
@@ -135,13 +141,18 @@ class Mscore
 		out = Array.new()
 
 
+		#level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level.size.times do |tmp|
-			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} #{ARGV[0]}")
+
+			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} #{@filename.gsub(" ",'\ ')}")
+			#out, err, stat = Open3.capture3("cat #{@filename.gsub(" ",'\ ' )}")
 			out_arr = out.split("\r\n")
 
 			#puts $info[0]
 
+		#puts level[tmp]
+			
 			out_arr.size.times do |i|
 				out_arr[i].strip!
 				#	print sprintf("%10s", out_arr[i]);
@@ -245,7 +256,7 @@ end
 
 #-----------------------main----------------------------
 song = Mscore.new()
-human = Human.new()
+#human = Human.new()
 song.set_file()
 
 #song.show_info()

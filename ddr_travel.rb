@@ -50,7 +50,7 @@ class Mscore
 		@levels = Array.new
 		@filename = ""
 		@file = ""
-		
+
 		@cont = Array.new(16, 0)
 	end
 	################MUSIC SCORE#################
@@ -63,7 +63,7 @@ class Mscore
 	def setbox()
 		#p @lines
 		@boxes.push(@lines.dup)
-		
+
 		@lines.clear()
 	end
 
@@ -100,7 +100,7 @@ class Mscore
 			else
 				#p line
 				$info[info_i] = line.to_s.chop
-				puts "#{info_i}:#{$info[info_i]}"
+				#puts "#{info_i}:#{$info[info_i]}"
 				info_i += 1
 			end
 		end
@@ -130,30 +130,16 @@ class Mscore
 	end	
 	################INFORMATION#################
 	def show_info ()
-		#full #TITLE is 
-		#["#TITLE:smooooch・∀・;\r\n"]
-		#$info = @file.grep(/#.*;/m)
-		
-		
-		#$info = 
-		#puts $info[0]
-		#puts $info[2]
-		#puts $info[16]
-		#puts $info.size
 
-		#show level
-		#sample
-		#Begginer:    2:
-		#
 		require "open3"
 		out = Array.new()
-		
+
 
 		level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level.size.times do |tmp|
 			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} #{ARGV[0]}")
 			out_arr = out.split("\r\n")
-			
+
 			#puts $info[0]
 
 			out_arr.size.times do |i|
@@ -169,7 +155,7 @@ class Mscore
 		changes = $info[16].split(";")[0].split(":")[1].split(",")
 		changes.size.times do |i|
 			$bpms[i] = (changes[i].split("=")[1]).to_f
-			puts $bpms[i]
+			#puts $bpms[i]
 		end
 	end
 
@@ -177,8 +163,10 @@ class Mscore
 	def count(lev)
 		tmp = 0
 		#移動距離
-		
+		travel = 0
+
 		no_notes = 0
+		no_box = 0
 
 		@levels[lev].each do |bo|	
 			#puts "box.size: #{bo.size}"
@@ -187,26 +175,31 @@ class Mscore
 				(4 - lin.count(0)).times do	
 					lin.size.times do |i|
 						if(lin[i].to_i != 0 && lin[i].kind_of?(String) )
-						tmp = tmp*4 + i.to_i
+							tmp = tmp*4 + i.to_i
 							@cont[tmp] += 1
 							tmp = i
-							calculate(lin[i],tmp,no_notes)
+							travel += calculate(lin[i],tmp, no_notes, no_box, bo.size)
 						end
 					end
 					no_notes = 0
+					no_box = 0
 				end
-			no_notes += 1
+				no_notes += 1
+				if no_notes == bo.size
+					no_notes = 0
+					no_box += 1
+				end
 			end
 		end
-		
+		puts "travel: #{travel}"
 	end
 
-	def calculate(before, after,no_notes)
-		
+	def calculate(before, after, no_notes, no_box, box_size)
+
 		near = 0.40 #l->u, l->d,...
 		over = 0.56 #l->r, u->d,...
 		same = 0.30 #l->l, r->r,...
-	
+
 		this = 0
 
 		if before == after
@@ -216,11 +209,10 @@ class Mscore
 		else
 			this = near
 		end
-		
+
+		return ($bpms[0] * this * box_size)/(1+no_notes+4*no_box)
 
 	end
-
-
 end
 
 class Human
@@ -236,7 +228,7 @@ class Human
 		@l_leg = 0
 		@r_leg = 3
 	end
- 
+
 	def dancing()
 	end
 
@@ -258,7 +250,7 @@ song.show_info()
 #print "please iuput level: "
 #level_num = gets.to_i
 #song.count(level_num)
-song.count(4)
+song.count(3)
 
 song.closefile()
 #end #while

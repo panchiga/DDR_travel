@@ -152,7 +152,13 @@ class Mscore
 	end
 
 	def set_bpm ()
-		changes = $info[16].split(";")[0].split(":")[1].split(",")
+		num = 0
+
+		$info.size.times do |i|
+			num = i if $info[i].index("BPM") != nil
+		end
+
+		changes = $info[num].split(";")[0].split(":")[1].split(",")
 		changes.size.times do |i|
 			$bpms[i] = (changes[i].split("=")[1]).to_f
 			#puts $bpms[i]

@@ -53,7 +53,7 @@ class Mscore
 		@file = ""
 
 		@cont = Array.new(16, 0)
-		@foot_levels = Array.new(5,0)
+		@foot_levels = {"Beginner"=> 0,"Easy"=> 0, "Medium"=> 0 ,"Hard"=> 0,"Challenge"=> 0}
 	end
 	################MUSIC SCORE#################
 	#first, dance score in file to arrays

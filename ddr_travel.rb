@@ -1,5 +1,5 @@
 $info = Array.new()
-$bpms = Array.new()
+$bpms = Hash.new()
 =begin
 0 #TITLE:smooooch・∀・;
 1 #SUBTITLE:;
@@ -169,44 +169,81 @@ class Mscore
 
 		changes = $info[num].split(";")[0].split(":")[1].split(",")
 		changes.size.times do |i|
-			$bpms[i] = (changes[i].split("=")[1]).to_f
+			$bpms.store(changes[i].split("=")[0].to_i ,changes[i].split("=")[1].to_f)
 			#puts $bpms[i]
 		end
 	end
 
-	#同時が考慮されてない
-	def count(lev)
-		tmp = 0
+	def show_bpms 
+		$bpms.size.times do |i|
+			puts "#{$bpms.keys[i]}: #{$bpms[$bpms.keys[i]]}"
+		end
+	end
+
+	def reload_bpm (bpm,now)
+		bpm = $bpms[now] if $bpms[now] != nil
+		return bpm
+	end
+
+	def travel(lev)
+		tmp1 = 0
+		tmp2 = 1
+		bpm = $bpms[$bpms.keys[0]]
+
+		#tmp2
+		#tmp1
+		#nawの順
+
 		#移動距離
 		travel = 0
 
 		no_notes = 0
 		no_box = 0
 
+		now_mesure = 0.0
+		bo_counter = 0
+
+		tmp_bo_size = 4
+		# 計算をしてる 
 		@levels[lev].each do |bo|	
 			#puts "box.size: #{bo.size}"
+			lin_counter = 0
+			no_notes *= (bo.size.to_f / tmp_bo_size.to_f).to_i
+			tmp_bo_size = bo.size if bo.size != 0
+			
 			bo.each do |lin|
 				#p lin
-				(4 - lin.count(0)).times do	
+				now_mesure += lin_counter * (1.0/(bo.size/4.0)) + bo_counter * 4.0
+				reload_bpm(bpm,now_mesure)
+				#なにもないところか、ジャンプか1つのノーツかを判断
+				if lin.count("0") == 4
+					no_notes += 1
+					next
+				elsif (lin.count("0") == 2 )
+					jump = 1
+					travel += calculate(0,0,no_notes,no_box,bo.size,jump,bpm)
+					no_notes = 0
+					no_box = 0
+				else
+					jump = 0
 					lin.size.times do |i|
 						if(lin[i].to_i != 0 && lin[i].kind_of?(String) )
-							tmp = tmp*4 + i.to_i
-							@cont[tmp] += 1
-							tmp = i
-							travel += calculate(lin[i],tmp, no_notes, no_box, bo.size)
+							travel += calculate(tmp2, i, no_notes, no_box, bo.size,jump,bpm)
+							tmp2 = tmp1
+							tmp1 = i
+							break
 						end
 					end
 					no_notes = 0
 					no_box = 0
 				end
-				no_notes += 1
 				if no_notes == bo.size
 					no_notes = 0
 					no_box += 1
 				end
 			end
 		end
-		travel_file = open("travel","a")
+		travel_file = open("travel.csv","a")
 
 		travel_file.print "#{@foot_levels[lev]},"
 		travel_file.print "#{@filename.split("/").pop},"
@@ -217,15 +254,18 @@ class Mscore
 		puts "travel: #{travel}"
 	end
 
-	def calculate(before, after, no_notes, no_box, box_size)
+	def calculate(before, after, no_notes, no_box, box_size,jump,bpm)#jump == true or false
 
 		near = 0.40 #l->u, l->d,...
 		over = 0.56 #l->r, u->d,...
 		same = 0.30 #l->l, r->r,...
+		jump = 1.0
 
 		this = 0
 
-		if before == after
+		if jump == true 
+			this = jump
+		elsif before == after
 			this = same
 		elsif (before == 0 && after == 3)||(before == 3 && after == 0) || (before == 1 && after == 2) || (before == 2 &&after == 1)
 			this = over
@@ -233,7 +273,7 @@ class Mscore
 			this = near
 		end
 
-		return ($bpms[0] * this * box_size)/(1+no_notes+4*no_box)
+		return (bpm * this * box_size)/(1+no_notes+4*no_box)
 
 	end
 end
@@ -262,16 +302,13 @@ song = Mscore.new()
 #human = Human.new()
 song.set_file()
 
-#song.show_info()
 song.readfile()
 
 song.show_info()
-
+#song.show_bpms()
 #print "please iuput level: "
 #level_num = gets.to_i
-#song.count(level_num)
-song.count(3)
+#song.travel(level_num)
+song.travel(3)
 
 song.closefile()
-#end #while
-

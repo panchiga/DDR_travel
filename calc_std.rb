@@ -1,6 +1,6 @@
 #print "input file name: "
 #name = gets.to_s.chop
-$file = open("travel","r")
+$file = open("travel.csv","r")
 $f_arr = Array.new()
 
 def standard()
@@ -25,7 +25,7 @@ def test_std (num)
 end
 
 def output_csv ()
-	csv_file = open("result.csv","a")
+	csv_file = open("result.csv","w")
 	i = 0
 	arr = Array.new()
 	$f_arr.each do |line|

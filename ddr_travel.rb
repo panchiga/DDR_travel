@@ -48,7 +48,8 @@ class Mscore
 	def initialize 
 		@lines = Array.new
 		@boxes = Array.new
-		@levels = Array.new
+		#@levels = Array.new
+		@levels = { "Beginner"=> [],"Easy"=> [], "Medium"=> [] ,"Hard"=> [],"Challenge"=> []}
 		@filename = ""
 		@file = ""
 
@@ -69,8 +70,8 @@ class Mscore
 		@lines.clear()
 	end
 
-	def setlevel()
-		@levels.push(@boxes.dup)
+	def setlevel(key)
+		@levels[key] = (@boxes.dup)
 		@boxes.clear()
 	end
 
@@ -78,32 +79,44 @@ class Mscore
 	def readfile()
 		info_i = 0
 		mainflag = false
+		dp_flag = 0
 		print @file.find {|line| /TITLE/ =~ line}
-		@file.each do |line|
-			if line.index("#") == nil
 
-				if (mainflag == false) and (line[0] == "/") 
-					mainflag = true 
-				else
-					if line.chop!.size == 4
-						setline(line[0],line[1],line[2],line[3])
-						#puts line
-					end
-					if line.index(",") != nil
-						#p @lines
-						setbox()
-						#p @boxes
-					end
-					if line.index(";") != nil 
-						#p @boxes
-						setlevel()
-					end	
+		lev = ""
+
+		@file.each do |line|
+			if line.index(/double/)
+				dp_flag = 1
+			end
+			if dp_flag == 0
+				if line.index(/Beginner|Easy|Medium|Hard|Challenge/)
+					lev = line.split(":")[0].split(" ").pop
 				end
-			else
-				#p line
-				$info[info_i] = line.to_s.chop
-				#puts "#{info_i}:#{$info[info_i]}"
-				info_i += 1
+				if line.index("#") == nil
+
+					if (mainflag == false) and (line[0] == "/") 
+						mainflag = true 
+					else
+						if line.chop!.size == 4
+							setline(line[0],line[1],line[2],line[3])
+							#puts line
+						end
+						if line.index(",") != nil
+							#p @lines
+							setbox()
+							#p @boxes
+						end
+						if line.index(";") != nil 
+							#p @boxes
+							setlevel(lev)
+						end	
+					end
+				else
+					#p line
+					$info[info_i] = line.to_s.chop
+					#puts "#{info_i}:#{$info[info_i]}"
+					info_i += 1
+				end
 			end
 		end
 		set_bpm()
@@ -313,6 +326,7 @@ song.show_info()
 #print "please iuput level: "
 #level_num = gets.to_i
 #song.travel(level_num)
-song.travel(3)
+song.travel("Hard")
+
 
 song.closefile()

@@ -135,14 +135,14 @@ class Mscore
 	def show_info ()
 
 		require "open3"
-		out = Array.new()
+		out = Array.new(5,"")
 
 
 		#level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level = ["Beginner","Easy","Medium","Hard","Challenge"]
-		level.size.times do |tmp|
+		level.each do |tmp|
 
-			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} #{Regexp.escape(@filename)}")
+			out, err, stat = Open3.capture3("grep -A 1 #{tmp} #{Regexp.escape(@filename)}")
 			#out, err, stat = Open3.capture3("cat #{@filename.gsub(" ",'\ ' )}")
 			out_arr = out.split("\r\n")
 
@@ -216,19 +216,23 @@ class Mscore
 				now_mesure += lin_counter * (1.0/(bo.size/4.0)) + bo_counter * 4.0
 				reload_bpm(bpm,now_mesure)
 				#なにもないところか、ジャンプか1つのノーツかを判断
-				if lin.count("0") == 4
+				if (lin.count("0") == 4) || (lin.count("3") > 0)
 					no_notes += 1
 					next
 				elsif (lin.count("0") == 2 )
-					jump = 1
-					travel += calculate(0,0,no_notes,no_box,bo.size,jump,bpm)
+					
+					jump = true
+					jpan = calculate(0,0,no_notes,no_box,bo.size,jump,bpm)
+					travel += jpan
+
 					no_notes = 0
 					no_box = 0
-				else
-					jump = 0
+				elsif (lin.count("1") == 1)|| lin.count("2") == 1
+					jump = false
 					lin.size.times do |i|
 						if(lin[i].to_i != 0 && lin[i].kind_of?(String) )
-							travel += calculate(tmp2, i, no_notes, no_box, bo.size,jump,bpm)
+							stamp = calculate(tmp2, i, no_notes, no_box, bo.size,jump,bpm)
+							travel += stamp
 							tmp2 = tmp1
 							tmp1 = i
 							break
@@ -259,12 +263,12 @@ class Mscore
 		near = 0.40 #l->u, l->d,...
 		over = 0.56 #l->r, u->d,...
 		same = 0.30 #l->l, r->r,...
-		jump = 1.0
+		jp = 0.6
 
 		this = 0
 
 		if jump == true 
-			this = jump
+			this = jp
 		elsif before == after
 			this = same
 		elsif (before == 0 && after == 3)||(before == 3 && after == 0) || (before == 1 && after == 2) || (before == 2 &&after == 1)

@@ -127,7 +127,7 @@ class Mscore
 		#while(filename = gets.chop) do
 		#@filename = gets.chop
 		@filename = ARGV[0]
-			
+
 		if File.exist?(@filename) == false
 			print @filename + " is not found.\n "
 			#next
@@ -183,7 +183,6 @@ class Mscore
 		changes = $info[num].split(";")[0].split(":")[1].split(",")
 		changes.size.times do |i|
 			$bpms.store(changes[i].split("=")[0].to_i ,changes[i].split("=")[1].to_f)
-			#puts $bpms[i]
 		end
 	end
 
@@ -194,11 +193,17 @@ class Mscore
 	end
 
 	def reload_bpm (bpm,now)
-		bpm = $bpms[now] if $bpms[now] != nil
+	 	if $bpms[now] != nil	
+			bpm = $bpms[now]
+		else
+			bpm = bpm
+		end
 		return bpm
 	end
 
 	def travel(lev)
+
+
 		tmp1 = 0
 		tmp2 = 1
 		bpm = $bpms[$bpms.keys[0]]
@@ -217,6 +222,7 @@ class Mscore
 		bo_counter = 0
 
 		tmp_bo_size = 4
+		tmp_notes = 0
 		# 計算をしてる 
 		@levels[lev].each do |bo|	
 			#puts "box.size: #{bo.size}"
@@ -225,32 +231,36 @@ class Mscore
 			tmp_bo_size = bo.size if bo.size != 0
 			
 			bo.each do |lin|
-				#p lin
-				now_mesure += lin_counter * (1.0/(bo.size/4.0)) + bo_counter * 4.0
-				reload_bpm(bpm,now_mesure)
+				lin_counter = 1.0/(bo.size/4.0)
+				now_mesure += lin_counter# + bo_counter * 4.0
+				bpm = reload_bpm(bpm,now_mesure.to_i)
 				#なにもないところか、ジャンプか1つのノーツかを判断
 				if (lin.count("0") == 4) || (lin.count("3") > 0)
 					no_notes += 1
 					next
 				elsif (lin.count("0") == 2 )
-					
 					jump = true
-					jpan = calculate(0,0,no_notes,no_box,bo.size,jump,bpm)
+					jpan = calculate(0,0,no_notes+tmp_notes,no_box,bo.size,jump,bpm)
 					travel += jpan
+					#puts "#{jpan}: jump!"	
 
+					tmp_notes = no_notes
 					no_notes = 0
 					no_box = 0
 				elsif (lin.count("1") == 1)|| lin.count("2") == 1
 					jump = false
 					lin.size.times do |i|
 						if(lin[i].to_i != 0 && lin[i].kind_of?(String) )
-							stamp = calculate(tmp2, i, no_notes, no_box, bo.size,jump,bpm)
+							stamp = calculate(tmp2, i, no_notes+tmp_notes, no_box, bo.size,jump,bpm)
 							travel += stamp
 							tmp2 = tmp1
 							tmp1 = i
+							#puts "#{stamp}: stamp!"
+
 							break
 						end
 					end
+					tmp_notes = no_notes
 					no_notes = 0
 					no_box = 0
 				end

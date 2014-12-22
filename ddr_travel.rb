@@ -305,28 +305,10 @@ class Mscore
 	end
 end
 
-class Human
-	attr_accessor :l_leg
-	attr_accessor :r_leg
-
-	def initialize()
-		#left foot, right foot
-		#[0,1,2,3] 
-		#use queue
-		#example, right->left
-		#then, left->right 
-		@l_leg = 0
-		@r_leg = 3
-	end
-
-
-end
-
-
 
 #-----------------------main----------------------------
 song = Mscore.new()
-#human = Human.new()
+
 song.set_file()
 
 song.readfile()

@@ -1,30 +1,5 @@
 $info = Array.new()
 $bpms = Hash.new()
-=begin
-0 #TITLE:smooooch・∀・;
-1 #SUBTITLE:;
-2 #ARTIST:kors k;
-3 #TITLETRANSLIT:smooooch;
-4 #SUBTITLETRANSLIT:;
-5 #ARTISTTRANSLIT:;
-6 #CREDIT:;
-7 #BANNER:smooooch.png;
-8 #BACKGROUND:smooooch-bg.png;
-9 #LYRICSPATH:;
-10 #CDTITLE:./CDTITLES/beatmaniaIIDX.png;
-11 #MUSIC:smooooch.mp3;
-12 #OFFSET:0.480;
-13 #SAMPLESTART:22.560;
-14 #SAMPLELENGTH:15.000;
-15 #SELECTABLE:YES;
-16 #DISPLAYBPM:177.000;
-17 #BPMS:0.000=177.340,4.000=176.994,256.000=173.077,256.500=173.077,257.000=180.000,257.500=177.023;
-18 #STOPS:256.000=0.167
-;
-19 #BGCHANGES:;
-20-29 #NOTES:;
-=end
-
 
 #流れとして
 #fileを読み込んでsetlineを読んでlinesに格納していく
@@ -144,7 +119,8 @@ class Mscore
 
 	def closefile()
 		@file.close
-	end	
+	end
+
 	################INFORMATION#################
 	def show_info ()
 
@@ -152,12 +128,10 @@ class Mscore
 		out = Array.new(5,"")
 
 
-		#level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level.each do |tmp|
 
 			out, err, stat = Open3.capture3("grep -A 1 #{tmp} #{Regexp.escape(@filename)}")
-			#out, err, stat = Open3.capture3("cat #{@filename.gsub(" ",'\ ' )}")
 			out_arr = out.split("\r\n")
 
 			#puts $info[0]
@@ -226,7 +200,6 @@ class Mscore
 		tmp_notes = 0
 		# 計算をしてる 
 		@levels[lev].each do |bo|	
-			#puts "box.size: #{bo.size}"
 			lin_counter = 0
 			no_notes *= (bo.size.to_f / tmp_bo_size.to_f).to_i
 			tmp_bo_size = bo.size if bo.size != 0
@@ -289,7 +262,7 @@ class Mscore
 		near = 0.40 #l->u, l->d,...
 		over = 0.56 #l->r, u->d,...
 		same = 0.30 #l->l, r->r,...
-		jp = 0.6
+		jp = 0.6 #jump
 
 		this = 0
 

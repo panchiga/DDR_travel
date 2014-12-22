@@ -163,19 +163,16 @@ class Mscore
 		no_box = 0
 
 		now_mesure = 0.0
-		bo_counter = 0
 
 		tmp_bo_size = 4
 		tmp_notes = 0
 		# 計算をしてる 
 		@levels[lev].each do |bo|	
-			lin_counter = 0
 			no_notes *= (bo.size.to_f / tmp_bo_size.to_f).to_i
 			tmp_bo_size = bo.size if bo.size != 0
 			
 			bo.each do |lin|
-				lin_counter = 1.0/(bo.size/4.0)
-				now_mesure += lin_counter# + bo_counter * 4.0
+				now_mesure += 1.0/(bo.size/4.0)
 				bpm = reload_bpm(bpm,now_mesure.to_i)
 				#なにもないところか、ジャンプか1つのノーツかを判断
 				if (lin.count("0") == 4) || (lin.count("3") > 0)

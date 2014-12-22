@@ -18,7 +18,6 @@ class Mscore
 	attr_accessor :filename	
 	attr_accessor :file
 
-	attr_accessor :cont #l->l, l->d, l->u, l-> r,... 16 pattern
 	attr_accessor :foot_levels# 足12とか
 
 	def initialize 
@@ -29,7 +28,6 @@ class Mscore
 		@filename = ""
 		@file = ""
 
-		@cont = Array.new(16, 0)
 		@foot_levels = {"Beginner"=> 0,"Easy"=> 0, "Medium"=> 0 ,"Hard"=> 0,"Challenge"=> 0}
 	end
 	################MUSIC SCORE#################
@@ -75,15 +73,11 @@ class Mscore
 					else
 						if line.chop!.size == 4
 							setline(line[0],line[1],line[2],line[3])
-							#puts line
 						end
 						if line.index(",") != nil
-							#p @lines
 							setbox()
-							#p @boxes
 						end
 						if line.index(";") != nil 
-							#p @boxes
 							setlevel(lev)
 						end	
 					end
@@ -98,7 +92,7 @@ class Mscore
 		set_bpm()
 	end
 
-	################file########################
+
 	def set_file()
 		#while(filename = gets.chop) do
 		#@filename = gets.chop
@@ -117,37 +111,12 @@ class Mscore
 		end
 	end
 
+
 	def closefile()
 		@file.close
 	end
 
-	################INFORMATION#################
-	def show_info ()
-
-		require "open3"
-		out = Array.new(5,"")
-
-
-		level = ["Beginner","Easy","Medium","Hard","Challenge"]
-		level.each do |tmp|
-
-			out, err, stat = Open3.capture3("grep -A 1 #{tmp} #{Regexp.escape(@filename)}")
-			out_arr = out.split("\r\n")
-
-			#puts $info[0]
-
-		#puts level[tmp]
-			
-			out_arr.size.times do |i|
-				out_arr[i].strip!
-				#	print sprintf("%10s", out_arr[i]);
-			end	
-			#puts
-			puts sprintf("%10s %5s",out_arr[0], out_arr[1])
-			@foot_levels[tmp] = out_arr[1]
-		end
-	end
-
+	################BPMS########################
 	def set_bpm ()
 		num = 0
 
@@ -161,11 +130,13 @@ class Mscore
 		end
 	end
 
+
 	def show_bpms 
 		$bpms.size.times do |i|
 			puts "#{$bpms.keys[i]}: #{$bpms[$bpms.keys[i]]}"
 		end
 	end
+
 
 	def reload_bpm (bpm,now)
 	 	if $bpms[now] != nil	
@@ -176,16 +147,35 @@ class Mscore
 		return bpm
 	end
 
+	################INFORMATION#################
+	def show_info ()
+
+		require "open3"
+		out = Array.new(5,"")
+
+		level = ["Beginner","Easy","Medium","Hard","Challenge"]
+		level.each do |tmp|
+
+			out, err, stat = Open3.capture3("grep -A 1 #{tmp} #{Regexp.escape(@filename)}")
+			out_arr = out.split("\r\n")
+
+			out_arr.size.times do |i|
+				out_arr[i].strip!
+			end	
+			#レベルの出力
+			puts sprintf("%10s %5s",out_arr[0], out_arr[1])
+			@foot_levels[tmp] = out_arr[1]
+		end
+	end
 
 	##########################このプログラムの中心##########################
 	def travel(lev)
-		tmp1 = 0
-		tmp2 = 1
-		bpm = $bpms[$bpms.keys[0]]
-
 		#tmp2
 		#tmp1
 		#nawの順
+		tmp1 = 0
+		tmp2 = 1
+		bpm = $bpms[$bpms.keys[0]]
 
 		#移動距離
 		travel = 0
@@ -281,7 +271,6 @@ class Mscore
 	end
 end
 
-
 ##############################--MAIN--##########################
 song = Mscore.new()
 
@@ -290,11 +279,9 @@ song.set_file()
 song.readfile()
 
 song.show_info()
-#song.show_bpms()
 #print "please iuput level: "
 #level_num = gets.to_i
 #song.travel(level_num)
 song.travel("Hard")
-
 
 song.closefile()

@@ -34,9 +34,7 @@ class Mscore
 	end
 
 	def setbox()
-		#p @lines
 		@boxes.push(@lines.dup)
-
 		@lines.clear()
 	end
 
@@ -50,8 +48,6 @@ class Mscore
 		info_i = 0
 		mainflag = false
 		dp_flag = 0
-		print @file.find {|line| /TITLE/ =~ line}
-
 		lev = ""
 
 		@file.each do |line|
@@ -73,9 +69,7 @@ class Mscore
 						setlevel(lev) if line.index(";") != nil
 					end
 				else
-					#p line
 					$info[info_i] = line.to_s.chop
-					#puts "#{info_i}:#{$info[info_i]}"
 					info_i += 1
 				end
 			end
@@ -85,8 +79,6 @@ class Mscore
 
 
 	def set_file()
-		#while(filename = gets.chop) do
-		#@filename = gets.chop
 		@filename = ARGV[0]
 
 		if File.exist?(@filename) == false
@@ -94,11 +86,7 @@ class Mscore
 			#next
 		else
 			@file = open(@filename,"r")
-			p "filename: #{Regexp.escape(@filename)}"
-			#てすとかな
-			#@file.each do |line|
-			#	puts line
-			#end
+			p "filename: #{@filename}"
 		end
 	end
 

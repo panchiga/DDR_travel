@@ -1,14 +1,12 @@
-$info = Array.new()
-$bpms = Hash.new()
-
 #流れとして
 #fileを読み込んでsetlineを読んでlinesに格納していく
 #,を基準にboxとして扱い、linesを格納していく
 #最期まで入れていき、levelsに格納して全難易度の入った箱を作る
 #
-#lines == box
-#boxes == level
-#levels == all levels 
+
+#levels <- boxes <- linesの順番 
+$info = Array.new()
+$bpms = Hash.new()
 
 class Mscore
 	#attr_accessorこれをすることでこの名前の要素にアクセス出来る
@@ -17,19 +15,17 @@ class Mscore
 	attr_accessor :levels
 	attr_accessor :filename	
 	attr_accessor :file
-
 	attr_accessor :foot_levels# 足12とか
 
 	def initialize 
 		@lines = Array.new
 		@boxes = Array.new
-		#@levels = Array.new
 		@levels = { "Beginner"=> [],"Easy"=> [], "Medium"=> [] ,"Hard"=> [],"Challenge"=> []}
 		@filename = ""
 		@file = ""
-
 		@foot_levels = {"Beginner"=> 0,"Easy"=> 0, "Medium"=> 0 ,"Hard"=> 0,"Challenge"=> 0}
 	end
+
 	################MUSIC SCORE#################
 	#first, dance score in file to arrays
 	def setline(l1,l2,l3,l4)

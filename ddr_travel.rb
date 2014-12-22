@@ -34,8 +34,9 @@ $bpms = Hash.new()
 #lines == box
 #boxes == level
 #levels == all levels 
+
 class Mscore
-	#これをすることでこの名前の要素にアクセス出来る
+	#attr_accessorこれをすることでこの名前の要素にアクセス出来る
 	attr_accessor :lines 
 	attr_accessor :boxes
 	attr_accessor :levels
@@ -201,9 +202,9 @@ class Mscore
 		return bpm
 	end
 
+
+	##########################このプログラムの中心##########################
 	def travel(lev)
-
-
 		tmp1 = 0
 		tmp2 = 1
 		bpm = $bpms[$bpms.keys[0]]
@@ -281,6 +282,8 @@ class Mscore
 		puts "travel: #{travel}"
 	end
 
+
+	#1歩ごとの体力消費を計算
 	def calculate(before, after, no_notes, no_box, box_size,jump,bpm)#jump == true or false
 
 		near = 0.40 #l->u, l->d,...
@@ -306,7 +309,7 @@ class Mscore
 end
 
 
-#-----------------------main----------------------------
+##############################--MAIN--##########################
 song = Mscore.new()
 
 song.set_file()

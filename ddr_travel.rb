@@ -71,15 +71,10 @@ class Mscore
 					if (mainflag == false) and (line[0] == "/") 
 						mainflag = true 
 					else
-						if line.chop!.size == 4
-							setline(line[0],line[1],line[2],line[3])
-						end
-						if line.index(",") != nil
-							setbox()
-						end
-						if line.index(";") != nil 
-							setlevel(lev)
-						end	
+						#配列に譜面データを突っ込んでる
+						setline(line[0],line[1],line[2],line[3]) if line.chop!.size == 4
+						setbox () if line.index(",") != nil
+						setlevel(lev) if line.index(";") != nil
 					end
 				else
 					#p line

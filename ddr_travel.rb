@@ -49,14 +49,24 @@ class Mscore
 		mainflag = false
 		dp_flag = 0
 		lev = ""
+		lev_flag = false
 
 		@file.each do |line|
+			#level入れてる
+			if lev_flag == true
+				line.strip!
+				line.chop!
+				@foot_levels[lev] = line.to_i
+				lev_flag = false
+				next
+			end
 			if line.index(/double/)
 				dp_flag = 1
 			end
 			if dp_flag == 0
 				if line.index(/Beginner|Easy|Medium|Hard|Challenge/)
 					lev = line.split(":")[0].split(" ").pop
+					lev_flag = true
 				end
 				if line.index("#") == nil
 
@@ -140,15 +150,20 @@ class Mscore
 
 			out_arr.size.times do |i|
 				out_arr[i].strip!
+				out_arr[i].chop!
 			end	
 			#レベルの出力
 			puts sprintf("%10s %5s",out_arr[0], out_arr[1])
-			@foot_levels[tmp] = out_arr[1]
+			#@foot_levels[tmp] = out_arr[1]
 		end
 	end
 
 	##########################このプログラムの中心##########################
 	def travel(lev)
+		if @levels[lev] == []
+			return
+		end
+		
 		#tmp2
 		#tmp1
 		#nawの順
@@ -254,10 +269,11 @@ song.set_file()
 
 song.readfile()
 
-song.show_info()
+#song.show_info()
 #print "please iuput level: "
 #level_num = gets.to_i
 #song.travel(level_num)
 song.travel("Hard")
+song.travel("Challenge")
 
 song.closefile()

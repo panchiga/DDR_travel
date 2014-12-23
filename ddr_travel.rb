@@ -2,7 +2,6 @@
 #fileを読み込んでsetlineを読んでlinesに格納していく
 #,を基準にboxとして扱い、linesを格納していく
 #最期まで入れていき、levelsに格納して全難易度の入った箱を作る
-#
 
 #levels <- boxes <- linesの順番 
 $info = Array.new()
@@ -235,8 +234,8 @@ class Mscore
 
 		near = 0.40 #l->u, l->d,...
 		over = 0.56 #l->r, u->d,...
-		same = 0.30 #l->l, r->r,...
-		jp = 0.6 #jump
+		same = 0.50 #l->l, r->r,...
+		jp = 1.0 #jump
 
 		this = 0
 

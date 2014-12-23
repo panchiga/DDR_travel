@@ -138,23 +138,16 @@ class Mscore
 
 	################INFORMATION#################
 	def show_info ()
-
-		require "open3"
-		out = Array.new(5,"")
-
 		level = ["Beginner","Easy","Medium","Hard","Challenge"]
-		level.each do |tmp|
-
-			out, err, stat = Open3.capture3("grep -A 1 #{tmp} #{Regexp.escape(@filename)}")
-			out_arr = out.split("\r\n")
-
-			out_arr.size.times do |i|
-				out_arr[i].strip!
-				out_arr[i].chop!
-			end	
-			#レベルの出力
-			puts sprintf("%10s %5s",out_arr[0], out_arr[1])
-			#@foot_levels[tmp] = out_arr[1]
+		none = "--"
+		level.each do |lev|
+			if @foot_levels[lev] == 0
+				puts sprintf("%10s %5s",lev, none)
+				next
+			else
+				#レベルの出力
+				puts sprintf("%10s %5s",lev, @foot_levels[lev])
+			end
 		end
 	end
 
@@ -269,7 +262,7 @@ song.set_file()
 
 song.readfile()
 
-#song.show_info()
+song.show_info()
 #print "please iuput level: "
 #level_num = gets.to_i
 #song.travel(level_num)

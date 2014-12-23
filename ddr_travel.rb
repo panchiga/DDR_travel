@@ -219,8 +219,8 @@ class Mscore
 		end
 		travel_file = open("travel.csv","a")
 
-		travel_file.print "#{@foot_levels[lev]};"
-		travel_file.print "#{@filename.split("/").pop};"
+		travel_file.print "#{@foot_levels[lev]}; "
+		travel_file.print "#{@filename.split("/").pop.chop.chop.chop} --#{lev}--; "
 		travel_file.print "#{travel}"
 		travel_file.puts
 		travel_file.close
@@ -234,8 +234,8 @@ class Mscore
 
 		near = 0.40 #l->u, l->d,...
 		over = 0.56 #l->r, u->d,...
-		same = 0.50 #l->l, r->r,...
-		jp = 1.0 #jump
+		same = 0.30 #l->l, r->r,...
+		jp = 0.80 #jump
 
 		this = 0
 

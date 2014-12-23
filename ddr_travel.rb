@@ -220,8 +220,8 @@ class Mscore
 		end
 		travel_file = open("travel.csv","a")
 
-		travel_file.print "#{@foot_levels[lev]},"
-		travel_file.print "#{@filename.split("/").pop},"
+		travel_file.print "#{@foot_levels[lev]};"
+		travel_file.print "#{@filename.split("/").pop};"
 		travel_file.print "#{travel}"
 		travel_file.puts
 		travel_file.close

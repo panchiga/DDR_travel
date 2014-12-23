@@ -9,13 +9,13 @@ def standard()
 	adder = 0.0
 
 	$f_arr.each do |line|
-		adder += (line.split(",")[2].to_f - $ave)**2
+		adder += (line.split(";")[2].to_f - $ave)**2
 	end
 	$before_std = Math.sqrt(adder/$i.to_f)
 end
 
 def calclate_std (num)
-	return (($f_arr[num].split(",").last.to_f - $ave)/$before_std)*10 + 50
+	return (($f_arr[num].split(";").last.to_f - $ave)/$before_std)*10 + 50
 end
 
 def test_std (num)
@@ -29,7 +29,7 @@ def output_csv ()
 	i = 0
 	arr = Array.new()
 	$f_arr.each do |line|
-		arr = line.split(",")
+		arr = line.split(";")
 		#puts arr.size
 		#str0 = "%s," %[#{arr[0]}]
 		#str1 = "%30s," %[#{arr[1]}]
@@ -52,7 +52,7 @@ sum = 0
 
 $file.each do |line|
 	$f_arr.push(line)
-	sum += line.to_s.split(",")[2].to_f
+	sum += line.to_s.split(";")[2].to_f
 
 	$i += 1
 end

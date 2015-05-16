@@ -18,7 +18,9 @@
 #これで一ファイル
 #
 #次にそのファイルを基に解析
+require 'simple_color'
 
+$color = SimpleColor.new
 
 $info = Array.new()
 
@@ -110,7 +112,7 @@ class Musicsm
 
 		level = ["Beginner","Easy","Medium","Hard","Challenge"]
 		level.size.times do |tmp|
-			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} sm")
+			out, err, stat = Open3.capture3("grep -A 1 #{level[tmp]} POSSESSION.sm")
 			out_arr = out.split("\r\n")
 			print tmp
 
@@ -149,24 +151,56 @@ class Musicsm
 		i = 0
 		compare_0 = Array.new(4,"0")
 		@levels[level].each do |box|
+			j = 0
 			box.each do |line|
 				if line == compare_0
+					j += 1
 					next
 				else
+					ch_color(j,box.size)
 					transArrow(line[0],line[1],line[2],line[3])
 				end
+				$color.off
+				j += 1
 			end
 			i+=1
-			puts "#{i}-------------------------"
+			$color.echos(:white, "#{i}----------------")
 		end
 		
 	end
 
+	def ch_color(i, box_size)
+		colors = Array.new(4)
+		colors[0] = :red
+		colors[1] = :blue
+		colors[2] = :yellow
+		colors[3] = :green
+
+		quote = 0
+
+		if (box_size % 4 == 0)
+			quote = box_size/4
+		end
+
+		case i%quote
+			when 0
+				$color.ch_fg(:red)
+			when quote/2
+				$color.ch_fg(:blue)
+			when quote/4, (quote/4)+(quote/2)
+				$color.ch_fg(:yellow)
+			else
+				$color.ch_fg(:green)
+		end
+
+		#print "#{i} :"
+	end
+
 	def transArrow(l1, l2, l3, l4)
 
-		left = "<"
-		down = "V"
-		up = "A"
+		left 	= "<"
+		down 	= "V"
+		up	 	= "A"
 		right = ">"
 
 		@lf = trance(left, l1, @lf)
@@ -180,8 +214,8 @@ class Musicsm
 
 	def trance (arrow, l, ff)
 
-		freez = "||"
-		dot = "・"
+		freez = "|"
+		dot = "-"
 		
 		if (l == "1" || l == "2")
 			print sprintf("%4s", arrow)
@@ -207,12 +241,11 @@ end
 
 
 ############--#MAIN#--################################
+
 song = Musicsm.new()
 
 song.set_file()
-
 song.readfile()
-
 song.show_info()
 
 

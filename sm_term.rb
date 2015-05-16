@@ -18,12 +18,14 @@
 #これで一ファイル
 #
 #次にそのファイルを基に解析
-require 'simple_color'
 
+
+#出力色を変えるライブラリ
+require 'simple_color'
 $color = SimpleColor.new
 
+#.smファイルのヘッダーとファイル名、ファイルを管理するクラス
 class SongInfo
-
 
 	attr_accessor:file
 	attr_accessor:filename
@@ -83,7 +85,8 @@ class SongInfo
 
 end
 
-
+#.smの譜面部分を扱うクラス
+#でかい
 class Musicsm < SongInfo
 
 	attr_accessor:lines
@@ -95,11 +98,13 @@ class Musicsm < SongInfo
 		@boxes = Array.new
 		@levels = Array.new
 		
+		#フリーズアローのフラッグ
 		@lf = false
 		@df = false
 		@uf = false
 		@rf = false
 
+		#Dvorak仕様のホームポジション
 		@rl = "h"
 		@rd = "t"
 		@ru = "n"
@@ -156,10 +161,11 @@ class Musicsm < SongInfo
 		end
 	end
 
-	def show_level(level)
-		p @levels[level]
-	end
-
+	#選んだlevelに対応した譜面を出力
+	#足でどう踏むかを登録
+	#out_fileに踏んだ履歴を書き込む
+	#
+	##失敗した際のリカバリがないのが問題
 	def play(level)
 		out_file = open("#{@filename}_#{level}_play.sm","w")
 		i = 0
@@ -184,6 +190,8 @@ class Musicsm < SongInfo
 		
 	end
 
+	#出力の際の色を変える
+	#NOTEスキン仕様
 	def ch_color(i, box_size)
 		colors = Array.new(4)
 		colors[0] = :red
@@ -211,6 +219,8 @@ class Musicsm < SongInfo
 		#print "#{i} :"
 	end
 
+	#数字で与えられる行を矢印に置き換える
+	#0010 から --A- のように
 	def transArrow(l1, l2, l3, l4)
 
 		left 	= "<"
@@ -223,9 +233,12 @@ class Musicsm < SongInfo
 		@uf = trance(up, l3, @uf)
 		@rf = trance(right, l4, @rf)
 
-
 	end	
 
+	#tranceArrowの友達
+	#LDURを1文字ずつ見る
+	#arrowはLDUR
+	#lは普通の矢印、フリーズ、フリーズ終わり何かを見分ける
 	def trance (arrow, l, ff)
 
 		freez = "|"
@@ -251,7 +264,9 @@ class Musicsm < SongInfo
 		return ff
 	end
 
-	def set_arrows ()
+	#世の中にはDvorakじゃない人もいるのでその人たち向け
+	#優しい
+	def set_arrows 
 
 		puts "leftHand left"
 		@ll = gets.chop
@@ -272,6 +287,9 @@ class Musicsm < SongInfo
 		@rr = gets.chop
 	end
 
+	#どんな風に踏むか入力して翻訳して返す
+	#--A- n だったら --L-みたいに
+	#ここでnは左手のUpに対応
 	def push_arrow
 		arrow = gets.chop
 		str = file_arrow(arrow)
@@ -279,6 +297,10 @@ class Musicsm < SongInfo
 		return str
 	end
 
+	#push_arrowの友達
+	#どのキーがおされたかを見て再出力する関数
+	#直接的には翻訳を担当
+	#同時押し対応
 	def file_arrow (str)
 		stamp = "----"
 		str.size.times do |i|
@@ -305,6 +327,8 @@ class Musicsm < SongInfo
 		return stamp
 	end
 
+	#file_arrowと友達
+	#書きなおして再出力の部分を担当
 	def out_arrows(str)
 		print "\e[1A"
 		

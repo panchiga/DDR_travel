@@ -23,6 +23,7 @@
 #出力色を変えるライブラリ
 require 'simple_color'
 $color = SimpleColor.new
+$pre_color = SimpleColor.new
 
 #.smファイルのヘッダーとファイル名、ファイルを管理するクラス
 class SongInfo
@@ -92,11 +93,14 @@ class Musicsm < SongInfo
 	attr_accessor:lines
 	attr_accessor:lboxes
 	attr_accessor:levels
+	attr_accessor:fg_color
 
 	def initialize 
 		@lines = Array.new
 		@boxes = Array.new
 		@levels = Array.new
+
+		@fg_color = :red
 		
 		#フリーズアローのフラッグ
 		@lf = false
@@ -208,14 +212,19 @@ class Musicsm < SongInfo
 		case i%quote
 			when 0
 				$color.ch_fg(:red)
+				res_col = :red
 			when quote/2
 				$color.ch_fg(:blue)
+				res_col = :blue
 			when quote/4, (quote/4)+(quote/2)
 				$color.ch_fg(:yellow)
+				res_col = :yellow
 			else
 				$color.ch_fg(:green)
+				res_col = :green
 		end
-
+		@fg_color = res_col
+		return res_col
 		#print "#{i} :"
 	end
 
@@ -293,6 +302,7 @@ class Musicsm < SongInfo
 	def push_arrow
 		arrow = gets.chop
 		str = file_arrow(arrow)
+
 		
 		return str
 	end
@@ -333,7 +343,16 @@ class Musicsm < SongInfo
 		print "\e[1A"
 		
 		str.length.times do |i|
+			if (str[i] == "L")
+				$color.ch_bg(:red)
+			elsif (str[i] == "R")
+				$color.ch_bg(:blue)
+			end
 			print sprintf("%4s",str[i])
+
+			$color.off()
+			$color.ch_fg(@fg_color)
+
 		end
 		puts "          "
 		STDOUT.flush
